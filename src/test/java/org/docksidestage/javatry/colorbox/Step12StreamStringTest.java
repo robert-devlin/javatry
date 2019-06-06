@@ -15,6 +15,7 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -157,8 +158,7 @@ public class Step12StreamStringTest extends PlainTestCase {
                 .flatMap(colorBox -> colorBox.getSpaceList().stream())
                 .map(boxSpace -> boxSpace.getContent())
                 .filter(content -> content instanceof String)
-                .map(content ->((String) content).length())
-                .mapToInt(Integer::intValue)
+                .mapToInt(content ->((String) content).length())
                 .sum();
         log("sum of string lengths is " + sum);
     }
@@ -277,7 +277,7 @@ public class Step12StreamStringTest extends PlainTestCase {
                 .map(boxSpace -> boxSpace.getContent())
                 .filter(content -> content instanceof String)
                 .map(content -> content.toString())
-                .filter(strContent -> strContent.contains("front"))
+                .filter(strContent -> strContent.endsWith("front"))
                 .map(strContent -> strContent.substring(0,1))
                 .findFirst()
                 .orElse(null);
@@ -292,6 +292,20 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスに入ってる "Water" で始まる文字列の最後の一文字は？)
      */
     public void test_substring_findLastChar() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        String foundWord = colorBoxList.stream()
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(boxSpace -> boxSpace.getContent())
+                .filter(content -> content instanceof String)
+                .map(content -> content.toString())
+                .filter(strContent -> strContent.startsWith("Water"))
+                .map(strContent -> strContent.substring(strContent.length()-1,strContent.length()))
+                .findFirst()
+                .orElse(null);
+        if(foundWord != null)
+            log(foundWord);
+        else
+            log("no words found starting with 'Water'");
     }
 
     // ===================================================================================
@@ -302,6 +316,22 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスに入ってる "o" (おー) を含んだ文字列から "o" を全て除去したら何文字？)
      */
     public void test_replace_remove_o() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        String removeStr = "o";
+        String foundWord = colorBoxList.stream()
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(boxSpace -> boxSpace.getContent())
+                .filter(content -> content instanceof String)
+                .map(content -> content.toString())
+                .filter(strContent -> strContent.contains(removeStr))
+                .findFirst()
+                .orElse(null);
+        if(foundWord != null) {
+            String foundWordRemoveChar = foundWord.replace(removeStr, "");
+            log(String.format("%s: %d | %s: %d", foundWord, foundWord.length(), foundWordRemoveChar, foundWordRemoveChar.length()));
+        }
+        else
+            log("no words found starting with 'Water'");
     }
 
     /**
@@ -309,6 +339,21 @@ public class Step12StreamStringTest extends PlainTestCase {
      * カラーボックスに入ってる java.io.File のパス文字列のファイルセパレーターの "/" を、Windowsのファイルセパレーターに置き換えた文字列は？
      */
     public void test_replace_fileseparator() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        String foundWord = colorBoxList.stream()
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(boxSpace -> boxSpace.getContent())
+                .filter(content -> content instanceof File)
+                .map(content -> content.toString())
+                .findFirst()
+                .orElse(null);
+        if(foundWord != null)
+        {
+            log(foundWord);
+            log(foundWord.replace("/","\\"));
+        }
+        else
+            log("no words found starting with 'Water'");
     }
 
     // ===================================================================================
@@ -318,9 +363,36 @@ public class Step12StreamStringTest extends PlainTestCase {
      * What is total length of text of DevilBox class in color-boxes? <br>
      * (カラーボックスの中に入っているDevilBoxクラスのtextの長さの合計は？)
      */
-    public void test_welcomeToDevil() {
+    public String devilBoxHandler(YourPrivateRoom.DevilBox db){
+        YourPrivateRoom.DevilBox devilBox = (YourPrivateRoom.DevilBox) db;
+        devilBox.wakeUp();
+        devilBox.allowMe();
+        devilBox.open();
+        try {
+            String text = devilBox.getText();
+            if (text == null) {
+                throw new YourPrivateRoom.DevilBoxTextNotFoundException("text is null!");
+            }
+            return text;
+        }
+        catch(YourPrivateRoom.DevilBoxTextNotFoundException e) {
+            log(e);
+            return "";
+        }
     }
 
+    public void test_welcomeToDevil() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        int sum = colorBoxList.stream()
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(boxSpace -> boxSpace.getContent())
+                .filter(content -> content instanceof YourPrivateRoom.DevilBox)
+                .map(db -> devilBoxHandler((YourPrivateRoom.DevilBox) db))
+                .mapToInt(dbText -> dbText.length())
+                .sum();
+
+        log(sum);
+    }
     // ===================================================================================
     //                                                                           Challenge
     //                                                                           =========
