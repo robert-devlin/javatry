@@ -21,7 +21,7 @@ import org.docksidestage.unit.PlainTestCase;
  * The test of Number with color-box. <br>
  * Show answer by log() for question of javadoc.
  * @author jflute
- * @author your_name_here
+ * @author robert
  */
 public class Step13NumberTest extends PlainTestCase {
 

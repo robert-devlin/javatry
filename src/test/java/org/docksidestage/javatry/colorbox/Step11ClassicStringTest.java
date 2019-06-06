@@ -187,14 +187,12 @@ public class Step11ClassicStringTest extends PlainTestCase {
             List<BoxSpace> spaceList = colorBox.getSpaceList();
             for (BoxSpace space : spaceList) {
                 Object content = space.getContent();
-                if (content instanceof String) { //if the content is of type String
+                if (content instanceof String) {
                     if (searchStr == null || ((String) content).toLowerCase().startsWith(searchStr.toLowerCase())) {
                         box = content.toString();
 
                         BoxColor boxColor = colorBox.getColor();
                         strBoxColor = boxColor.toString();
-
-                        //log(strBoxColor,searchStr,content);
                     }
                 }
             }
